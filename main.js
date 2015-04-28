@@ -1,27 +1,75 @@
 var current = 'X';
+var movesMade = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
 
+var sum = function(arr){
+	return arr.reduce(function(a,b){
+		return a + b;
+	}, 0)
+};
 
+var checkForWin = function(movesArray, letter){
+	var result = {
+		isWinner: false,
+		winner: null
+	};
 
-var checkForWin = function(){
-  // this will probably be the most involved function in this repo. 
-  // Before you start writing code, consider a strategy in pseudocode 
-  //that makes sense. If you can't follow the logic in plain English 
-  // you will not be able to translate it into working code.
-  return false;
+	var col1 = [], col2 = [], col3 = [];
+	movesArray.forEach(function(row, i){
+		// check horizontal win
+		var rowTotal = sum(row);
+		console.log('row ' + i + ': ' + rowTotal);
+		if(rowTotal == 3){
+			result.isWinner = true;
+		}
+
+		if(i == 0)
+			col1.push(movesArray[0][i]);
+
+		if(i == 1)
+			col2.push(movesArray[1][i]);
+
+		if(i == 2)
+			col3.push(movesArray[2][i]);
+
+	});
+
+	if(Math.abs(sum(col1)) == 3 || Math.abs(sum(col2)) == 3 || Math.abs(sum(col3)) == 3){
+		result.isWinner = true;
+	}
+
+	if(result.isWinner)
+		result.winner = letter;
+
+	return result;
 };
 
 window.onload = function() {
-
+	
 	var tds = Array.prototype.slice.call(document.getElementsByTagName('td'));
 
 	tds.forEach(function(td){
 		td.addEventListener('click', function(e){
-			if(!checkForWin()){
+			var result = checkForWin(movesMade, current);
+
+			if(e.target.innerHTML !== ''){
+				return;
+			}
+
+			if(!result.isWinner){
+				var column = e.target.cellIndex;
+				var row = parseInt(e.target.parentNode.id);
 
 				current = (current == 'X')? 'O' : 'X';
+
+				if(current === 'X')
+					movesMade[row][column] = 1;
+				else
+					movesMade[row][column] = -1;
+
 				td.innerHTML = current;
 			} else {
-				console.log('Game is over!')
+				console.log('Game is over!');
+				console.log(result);
 			}
 
 		});
